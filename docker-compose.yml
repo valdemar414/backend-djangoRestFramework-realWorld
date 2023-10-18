@@ -11,10 +11,15 @@ services:
     build: .
     command: >
       sh -c "
-      /usr/local/bin/wait-for-it.sh db:5432 -- &&
+      ./wait-for-it.sh db:5432 -- &&
       python manage.py makemigrations &&
       python manage.py migrate &&
-      python manage.py runserver 0.0.0.0:8000"
+      python manage.py runserver 0.0.0.0:8000 &&
+      sed -i 's/scram-sha-256 */trust/' /var/lib/postgresql/data/pg_hba.conf &&
+      su &&
+      su posgres &&
+      pg_ctl reload -D /var/lib/postgresql/data &&
+      createdb -U postgres realworld"
     volumes:
       - .:/app
     ports:
@@ -30,7 +35,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=realworld
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=0000
 
