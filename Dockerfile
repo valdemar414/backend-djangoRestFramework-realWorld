@@ -4,9 +4,10 @@ WORKDIR /app
 
 RUN apt-get update \
     && apt-get install -y libpq-dev \
-    && apt-get install -y gcc
+    && apt-get install -y gcc 
 
-
+RUN python -m venv venv || true
+RUN . venv/bin/activate
 RUN pip install --upgrade pip 
 
 COPY ./requirements.txt .
